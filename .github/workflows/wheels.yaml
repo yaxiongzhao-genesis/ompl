@@ -99,9 +99,6 @@ jobs:
           path: wheelhouse
           pattern: wheels-*
           merge-multiple: true
-          # Use a previous run ID
-          # https://github.com/yaxiongzhao-genesis/ompl/actions/runs/19157129339/job/54761200280
-          run-id: 19157129339
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@v1.12.4
