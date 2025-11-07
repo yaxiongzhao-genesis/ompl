@@ -38,6 +38,8 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
+          # This has to be 3.12, otherwise the later cibuildwheel failed
+          # https://github.com/pypa/cibuildwheel/issues/2277
           python-version: '3.12'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23.2
