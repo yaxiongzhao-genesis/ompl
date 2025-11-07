@@ -7,6 +7,7 @@ on:
 
 jobs:
   build_wheels:
+    if: false
     name: Build wheels on ${{ matrix.os }}-${{ matrix.arch }}
     # runs-on: ${{ matrix.os }}
     runs-on: self-hosted
