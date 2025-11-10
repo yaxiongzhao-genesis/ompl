@@ -9,8 +9,8 @@ jobs:
   build_wheels:
     # if: false
     name: Build wheels on ${{ matrix.os }}-${{ matrix.arch }}
-    # runs-on: ${{ matrix.os }}
-    runs-on: self-hosted
+    runs-on: ${{ matrix.os }}
+    # runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -59,12 +59,12 @@ jobs:
 
   prerelease:
     if: github.ref == 'refs/heads/main'
-    # runs-on: ubuntu-latest
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    # runs-on: self-hosted
     concurrency:
       group: push-${{ github.ref_name }}-prerelease
       cancel-in-progress: true
-    # needs: [build_wheels]
+    needs: [build_wheels]
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -73,7 +73,8 @@ jobs:
           merge-multiple: true
           # Use a previous run ID
           # https://github.com/yaxiongzhao-genesis/ompl/actions/runs/19157129339/job/54761200280
-          run-id: 19157129339
+          # This is for debugging the pypi publish step.
+          # run-id: 19157129339
 
       - name: GitHub release
         uses: ncipollo/release-action@v1.16.0
@@ -88,8 +89,8 @@ jobs:
 
   publish_pypi:
     name: Publish to PyPI
-    # runs-on: ubuntu-latest
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    # runs-on: self-hosted
     needs: build_wheels
     if: startsWith(github.ref, 'refs/tags/')
     steps:
@@ -102,6 +103,12 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@v1.12.4
+        # The following is the original.
+        # with:
+        #   packages: wheelhouse/*.whl
+        # env:
+        #   TWINE_USERNAME: __token__
+        #   TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         with:
           packages_dir: wheelhouse
           user: __token__
