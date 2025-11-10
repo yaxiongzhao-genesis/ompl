@@ -17,6 +17,23 @@ compiler=${CASTXMLCOMPILER}
 compiler_path=${CASTXMLCOMPILER_PATH}
 ")
 
+    # Get Eigen include directory - try multiple variable names and target properties
+    set(_eigen_include_dir "")
+    if(EIGEN3_INCLUDE_DIR)
+        set(_eigen_include_dir "${EIGEN3_INCLUDE_DIR}")
+    elseif(EIGEN3_INCLUDE_DIRS)
+        # Take first directory if it's a list
+        list(GET EIGEN3_INCLUDE_DIRS 0 _eigen_include_dir)
+    elseif(TARGET Eigen3::Eigen)
+        get_target_property(_eigen_include_dir Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+        if(_eigen_include_dir)
+            # If it's a list, take the first one
+            if(_eigen_include_dir MATCHES ";")
+                list(GET _eigen_include_dir 0 _eigen_include_dir)
+            endif()
+        endif()
+    endif()
+
     set(_candidate_include_path
         "${CMAKE_SOURCE_DIR}/src"
         "${CMAKE_SOURCE_DIR}/ompl/src"
@@ -25,7 +42,7 @@ compiler_path=${CASTXMLCOMPILER_PATH}
         "${PYTHON_INCLUDE_DIRS}"
         "${Boost_INCLUDE_DIR}"
         "${ASSIMP_INCLUDE_DIRS}"
-        "${EIGEN3_INCLUDE_DIR}"
+        "${_eigen_include_dir}"
         "${CMAKE_SOURCE_DIR}/py-bindings"
         "${CMAKE_SOURCE_DIR}/ompl/py-bindings")
     if(MINGW)
@@ -48,6 +65,24 @@ compiler_path=${CASTXMLCOMPILER_PATH}
 
       # Append those default includes
       list(APPEND _candidate_include_path ${_system_include_paths})
+
+      # On macOS, Homebrew installs packages to /opt/homebrew (ARM64) or /usr/local (Intel)
+      # Add common Homebrew include paths as fallback for Eigen and other dependencies
+      if(APPLE)
+        if(EXISTS "/opt/homebrew/include/eigen3")
+          list(APPEND _candidate_include_path "/opt/homebrew/include/eigen3")
+        endif()
+        if(EXISTS "/usr/local/include/eigen3")
+          list(APPEND _candidate_include_path "/usr/local/include/eigen3")
+        endif()
+        # Also add the parent directories in case Eigen is found but path wasn't set correctly
+        if(EXISTS "/opt/homebrew/include")
+          list(APPEND _candidate_include_path "/opt/homebrew/include")
+        endif()
+        if(EXISTS "/usr/local/include")
+          list(APPEND _candidate_include_path "/usr/local/include")
+        endif()
+      endif()
 
       # Some issues with ARM Neon intrinsics breaking in the castxml parse step, ignore in this part
       set(CASTXMLCFLAGS "${CASTXMLCFLAGS} -DEIGEN_DONT_VECTORIZE")
