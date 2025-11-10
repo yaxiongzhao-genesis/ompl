@@ -8,7 +8,8 @@ on:
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}-${{ matrix.arch }}
-    runs-on: ${{ matrix.os }}
+    # runs-on: ${{ matrix.os }}
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -21,20 +22,25 @@ jobs:
           pybuilds: cp3{10,11,12,13}-manylinux_aarch64
           arch: aarch64
           id: linux_arm64
-        - os: macos-13
-          pybuilds: cp3{10,11,12,13}-macosx_x86_64
-          arch: x86_64
-          id: macos_x86
-        - os: macos-15
-          pybuilds: cp3{10,11,12,13}-macosx_arm64
-          arch: arm64
-          id: macos_arm64
+        # - os: macos-13
+        #   pybuilds: cp3{10,11,12,13}-macosx_x86_64
+        #   arch: x86_64
+        #   id: macos_x86
+        # - os: macos-15
+        #   pybuilds: cp3{10,11,12,13}-macosx_arm64
+        #   arch: arm64
+        #   id: macos_arm64
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
-
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          # This is required to use self-hosted runner with cibuildwheel
+          # See: https://github.com/pypa/cibuildwheel/issues/2277
+          python-version: '3.12'
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23.2
         with:
