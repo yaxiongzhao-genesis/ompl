@@ -1,6 +1,6 @@
 [project]
 name = "ompl"
-dynamic = ["version", "readme"]
+dynamic = ["version"]
 description = "The Open Motion Planning Library"
 authors=[
     {name = "Ioan A. Șucan", email = "ioan@sucan.ro"},
