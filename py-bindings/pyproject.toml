@@ -31,11 +31,6 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
-[[tool.uv.index]]
-name = "jfrog"
-url = "https://trial95dp64.jfrog.io/artifactory/api/pypi/yaxiongzhao-genesis-pypi/simple"
-publish-url = "https://trial95dp64.jfrog.io/artifactory/api/pypi/yaxiongzhao-genesis-pypi"
-
 [tool.cibuildwheel]
 archs = "auto64"
 build-verbosity = 1
