@@ -164,6 +164,6 @@ setup(
     ],
     long_description=long_description,
     long_description_content_type='text/markdown',
-    package_dir={"ompl": "./ompl"},
+    package_dir={"ompl-genesis": "./ompl"},
     version=version,
 )
