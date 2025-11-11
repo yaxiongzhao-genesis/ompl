@@ -57,11 +57,7 @@ jobs:
           path: wheelhouse
 
   prerelease:
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    concurrency:
-      group: push-${{ github.ref_name }}-prerelease
-      cancel-in-progress: true
     needs: [build_wheels]
     steps:
       - uses: actions/download-artifact@v4
